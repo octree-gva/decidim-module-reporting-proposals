@@ -43,9 +43,6 @@ Decidim.register_component(:reporting_proposals) do |component|
     settings.attribute :comments_enabled, type: :boolean, default: true
     settings.attribute :comments_max_length, type: :integer, required: false
     settings.attribute :geocoding_enabled, type: :boolean, default: true
-    settings.attribute :geocoding_comparison_enabled, type: :boolean, default: true
-    settings.attribute :geocoding_comparison_radius, type: :integer, default: 30
-    settings.attribute :geocoding_comparison_newer_than, type: :integer, default: 60
     settings.attribute :attachments_allowed, type: :boolean, default: true
     settings.attribute :only_photo_attachments, type: :boolean, default: true
     settings.attribute :resources_permissions_enabled, type: :boolean, default: true
@@ -103,14 +100,14 @@ Decidim.register_component(:reporting_proposals) do |component|
   end
 
   component.register_stat :proposals_count, primary: true, priority: Decidim::StatsRegistry::HIGH_PRIORITY do |components, start_at, end_at|
-    Decidim::Proposals::FilteredProposals.for(components, start_at, end_at).published.except_withdrawn.not_hidden.count
+    Decidim::Proposals::FilteredProposals.for(components, start_at, end_at).published.not_withdrawn.not_hidden.count
   end
 
   component.register_stat :proposals_accepted, primary: true, priority: Decidim::StatsRegistry::HIGH_PRIORITY do |components, start_at, end_at|
     Decidim::Proposals::FilteredProposals.for(components, start_at, end_at).accepted.not_hidden.count
   end
 
-  component.register_stat :supports_count, priority: Decidim::StatsRegistry::HIGH_PRIORITY do |components, start_at, end_at|
+  component.register_stat :votes_count, priority: Decidim::StatsRegistry::HIGH_PRIORITY do |components, start_at, end_at|
     proposals = Decidim::Proposals::FilteredProposals.for(components, start_at, end_at).published.not_hidden
     Decidim::Proposals::ProposalVote.where(proposal: proposals).count
   end
@@ -237,7 +234,6 @@ Decidim.register_component(:reporting_proposals) do |component|
       scopes = participatory_space.organization.scopes
       global = nil
     end
-
     5.times do |n|
       state, answer, state_published_at = if n > 3
                                             ["accepted", Decidim::Faker::Localized.sentence(word_count: 10), Time.current]
@@ -257,7 +253,7 @@ Decidim.register_component(:reporting_proposals) do |component|
         scope: Faker::Boolean.boolean(true_ratio: 0.5) ? global : scopes.sample,
         title: { en: Faker::Lorem.sentence(word_count: 2) },
         body: { en: Faker::Lorem.paragraphs(number: 2).join("\n") },
-        state:,
+        proposal_state: Decidim::Proposals::ProposalState.find_by(token: state, component:),
         answer:,
         answered_at: state.present? ? Time.current : nil,
         state_published_at:,
@@ -323,7 +319,7 @@ Decidim.register_component(:reporting_proposals) do |component|
           scope: Faker::Boolean.boolean(true_ratio: 0.5) ? global : scopes.sample,
           title: { en: "#{proposal.title["en"]} #{Faker::Lorem.sentence(word_count: 1)}" },
           body: { en: "#{proposal.body["en"]} #{Faker::Lorem.sentence(word_count: 3)}" },
-          state: "evaluating",
+          proposal_state: Decidim::Proposals::ProposalState.find_by(token: "evaluating", component:),
           answer: nil,
           answered_at: Time.current,
           published_at: Time.current
@@ -440,7 +436,7 @@ Decidim.register_component(:reporting_proposals) do |component|
           scope: Faker::Boolean.boolean(true_ratio: 0.5) ? global : scopes.sample,
           title: Faker::Lorem.sentence(word_count: 2),
           body: Faker::Lorem.paragraphs(number: 2).join("\n"),
-          state:,
+          proposal_state: Decidim::Proposals::ProposalState.find_by(token: state, component:),
           published_at: Time.current
         )
         draft.coauthorships.build(author: participatory_space.organization)

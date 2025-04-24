@@ -54,59 +54,7 @@ module Decidim
 
           if @similar_proposals.blank?
             flash[:notice] = I18n.t("proposals.proposals.compare.no_similars_found", scope: "decidim")
-            redirect_to "#{Decidim::ResourceLocatorPresenter.new(@proposal).path}/complete"
-          end
-        end
-
-        # disable this step for reporting proposals
-        def complete
-          enforce_permission_to :edit, :proposal, proposal: @proposal
-          @step = Proposals::ProposalsController::STEP3
-
-          @form = form_proposal_model
-
-          @form.attachment = form_attachment_new
-
-          redirect_to "#{Decidim::ResourceLocatorPresenter.new(@proposal).path}/preview" if reporting_proposal?
-        end
-
-        def edit_draft
-          @step = reporting_proposal? ? Proposals::ProposalsController::STEP1 : Proposals::ProposalsController::STEP3
-          enforce_permission_to :edit, :proposal, proposal: @proposal
-        end
-
-        def update_draft
-          @step = Proposals::ProposalsController::STEP1
-          enforce_permission_to :edit, :proposal, proposal: @proposal
-
-          @form = form_proposal_params
-          update_proposal_command.call(@form, current_user, @proposal) do
-            on(:ok) do |proposal|
-              flash[:notice] = I18n.t("proposals.update_draft.success", scope: "decidim")
-              redirect_to "#{Decidim::ResourceLocatorPresenter.new(proposal).path}/preview"
-            end
-
-            on(:invalid) do
-              flash.now[:alert] = I18n.t("proposals.update_draft.error", scope: "decidim")
-              render :edit_draft
-            end
-          end
-        end
-
-        def update
-          enforce_permission_to :edit, :proposal, proposal: @proposal
-
-          @form = form_proposal_params
-          update_proposal_command.call(@form, current_user, @proposal) do
-            on(:ok) do |proposal|
-              flash[:notice] = I18n.t("proposals.update.success", scope: "decidim")
-              redirect_to Decidim::ResourceLocatorPresenter.new(proposal).path
-            end
-
-            on(:invalid) do
-              flash.now[:alert] = I18n.t("proposals.update.error", scope: "decidim")
-              render :edit
-            end
+            redirect_to "#{Decidim::ResourceLocatorPresenter.new(@proposal).path}/preview"
           end
         end
 
@@ -125,7 +73,7 @@ module Decidim
         end
 
         def new_proposal_form
-          reporting_proposal? ? Decidim::ReportingProposals::ProposalForm : Decidim::Proposals::ProposalWizardCreateStepForm
+          reporting_proposal? ? Decidim::ReportingProposals::ProposalForm : Decidim::Proposals::ProposalForm
         end
 
         def create_proposal_command
@@ -142,7 +90,7 @@ module Decidim
         end
 
         def geocoding_comparison?
-          if Decidim::Map.configured? && component_settings.geocoding_enabled? && component_settings.geocoding_comparison_enabled?
+          if Decidim::Map.configured? && component_settings.geocoding_enabled?
             @proposal ? @proposal.geocoded? : true
           end
         end

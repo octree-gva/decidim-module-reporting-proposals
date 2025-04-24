@@ -21,14 +21,15 @@ module Decidim::Admin
     let(:form) do
       CategoryForm.from_params(
         form_params,
-        current_participatory_space: participatory_space
       ).with_context(
-        current_organization: organization
+        current_organization: organization,
+        current_participatory_space: participatory_space,
+        current_user: user
       )
     end
 
     let(:valuator_role) { create(:participatory_process_user_role, role: "valuator", user:, participatory_process: participatory_space) }
-    let(:command) { described_class.new(form, participatory_space, admin) }
+    let(:command) { described_class.new(form) }
     let(:category) { Decidim::Category.last }
 
     it "adds the valuator roles" do

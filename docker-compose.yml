@@ -13,8 +13,13 @@ services:
       - DATABASE_HOST=reporting-proposal-pg
       - DATABASE_USERNAME=decidim
       - DATABASE_PASSWORD=pleaseChangeMe
-      - DEV_MODULE=decidim-reporting_proposal
+      - DEV_MODULE=decidim-reporting_proposals
       - RAILS_ENV=development
+      - MAPS_PROVIDER=osm
+      - MAPS_DYNAMIC_URL=https://tile.openstreetmap.org/{z}/{x}/{y}.png
+      - MAPS_STATIC_URL=https://tile.openstreetmap.org/{z}/{x}/{y}.png
+      - MAPS_ATTRIBUTION=<a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap</a> contributors
+      - MAPS_GEOCODING_HOST=https://nominatim.openstreetmap.org
     depends_on:
       - reporting-proposal-pg
     ports:

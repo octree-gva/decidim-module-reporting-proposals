@@ -249,17 +249,17 @@ module Decidim
           end
         end
 
-        context "when you try to complete a proposal created by another user" do
-          it "does not render the complete page" do
-            get(:complete, params:)
-            expect(subject).not_to render_template(:complete)
+        context "when you try to preview a proposal created by another user" do
+          it "does not render the preview page" do
+            get(:preview, params:)
+            expect(subject).not_to render_template(:preview)
           end
         end
 
-        context "when you try to compare a proposal created by another user" do
-          it "does not render the compare page" do
-            get(:compare, params:)
-            expect(subject).not_to render_template(:compare)
+        context "when you try to edit_draft a proposal created by another user" do
+          it "does not render the edit_draft page" do
+            get(:edit_draft, params:)
+            expect(subject).not_to render_template(:edit_draft)
           end
         end
 
@@ -294,7 +294,7 @@ module Decidim
             it "is not able to withdraw the proposal" do
               put :withdraw, params: params.merge(id: proposal.id)
 
-              expect(flash[:alert]).to eq("This proposal cannot be withdrawn because it already has supports.")
+              expect(flash[:alert]).to eq("This proposal cannot be withdrawn because it already has votes.")
               expect(response).to have_http_status(:found)
               proposal.reload
               expect(proposal.withdrawn?).to be false
