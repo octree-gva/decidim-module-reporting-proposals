@@ -15,10 +15,10 @@ DECIDIM_VERSION = Decidim::ReportingProposals::DECIDIM_VERSION
 gem "decidim", DECIDIM_VERSION
 gem "decidim-reporting_proposals", path: "."
 
-gem "bootsnap", "~> 1.7"
-gem "faker", "~> 3.2"
-gem "puma", ">= 6.3.1"
-gem "rspec", "~> 3.0"
+gem "bootsnap", "~> 1.18"
+gem "faker", "~> 3.5"
+gem "puma", ">= 6.6"
+gem "rspec", "~> 3.13"
 
 group :development, :test do
   gem "byebug", "~> 11.0", platform: :mri
@@ -29,10 +29,10 @@ end
 
 group :development do
   gem "letter_opener_web"
-  gem "listen", "~> 3.1"
-  gem "rubocop-faker", "~> 1.1"
-  gem "spring", "~> 2.0"
-  gem "spring-watcher-listen", "~> 2.0"
+  gem "listen", "~> 3.9"
+  gem "rubocop-faker", "~> 1.2"
+  gem "spring", "~> 4.3"
+  gem "spring-watcher-listen", "~> 2.1"
   gem "web-console"
 end
 
