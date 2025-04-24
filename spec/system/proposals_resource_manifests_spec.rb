@@ -4,7 +4,6 @@ require "spec_helper"
 require "decidim/accountability/test/factories"
 require "decidim/meetings/test/factories"
 require "decidim/budgets/test/factories"
-require "decidim/elections/test/factories"
 
 describe "Admin find_resource_manifest" do
   let(:organization) { create(:organization) }
@@ -260,69 +259,6 @@ describe "Admin find_resource_manifest" do
           expect(page).to have_content(translated(proposal.title))
           expect(page).not_to have_content(translated(reporting_proposal.title))
         end
-      end
-    end
-  end
-
-  describe "elections" do
-    let(:component) { create(:elections_component, participatory_space: participatory_process) }
-    let(:election) { create(:election, component:) }
-    let(:question) { create(:question, election:) }
-    let!(:answer) { create(:election_answer, question:) }
-
-    it "admin can choose reporting proposals" do
-      visit manage_component_path(component)
-      click_link_or_button "Manage questions"
-      click_link_or_button "Manage answers"
-      click_link_or_button "Edit"
-
-      within ".edit_answer" do
-        expect(page).to have_content "Proposals"
-
-        fill_in_i18n(
-          :answer_title,
-          "#answer-title-tabs",
-          en: "A Question"
-        )
-        tom_select("#proposals_list", option_id: [proposal.id, reporting_proposal.id])
-        click_link_or_button "Update answer"
-      end
-
-      expect(page).to have_admin_callout("Answer successfully updated")
-
-      page.click_link_or_button "Edit"
-      within ".plugin-dropdown_input" do
-        expect(page).to have_content(translated(proposal.title))
-        expect(page).to have_content(translated(reporting_proposal.title))
-      end
-    end
-
-    it "admin can choose reporting proposals on create" do
-      visit manage_component_path(component)
-      click_link_or_button "Manage questions"
-      click_link_or_button "Manage answers"
-      click_link_or_button "New answer"
-
-      within ".new_answer" do
-        expect(page).to have_content "Proposals"
-
-        fill_in_i18n(
-          :answer_title,
-          "#answer-title-tabs",
-          en: "A Question"
-        )
-        tom_select("#proposals_list", option_id: [proposal.id, reporting_proposal.id])
-        click_link_or_button "Create answer"
-      end
-
-      expect(page).to have_admin_callout("Answer successfully created")
-
-      within "tr", text: "A Question" do
-        page.click_link_or_button "Edit"
-      end
-      within ".plugin-dropdown_input" do
-        expect(page).to have_content(translated(proposal.title))
-        expect(page).to have_content(translated(reporting_proposal.title))
       end
     end
   end

@@ -38,11 +38,6 @@ module Decidim
         Decidim::Budgets::Admin::CreateProject.include(Decidim::ReportingProposals::CreateProjectOverride)
         Decidim::Budgets::Admin::UpdateProject.include(Decidim::ReportingProposals::CreateProjectOverride)
         Decidim::Templates::Admin::UpdateProposalAnswerTemplate.include(Decidim::ReportingProposals::Admin::UpdateProposalAnswerTemplateOverride) if defined?(Decidim::Templates)
-        if defined?(Decidim::Elections::Admin::AnswerForm)
-          Decidim::Elections::Admin::AnswerForm.include(Decidim::ReportingProposals::MapRelatedProposalsForFormOverride)
-          Decidim::Elections::Admin::CreateAnswer.include(Decidim::ReportingProposals::Admin::CreateAnswerOverride)
-          Decidim::Elections::Admin::UpdateAnswer.include(Decidim::ReportingProposals::Admin::CreateAnswerOverride)
-        end
         Decidim::Admin::CategoryForm.include(Decidim::ReportingProposals::Admin::CategoryFormOverride)
         Decidim::Admin::CreateCategory.include(Decidim::ReportingProposals::Admin::CreateCategoryOverride)
         Decidim::Admin::UpdateCategory.include(Decidim::ReportingProposals::Admin::UpdateCategoryOverride)
