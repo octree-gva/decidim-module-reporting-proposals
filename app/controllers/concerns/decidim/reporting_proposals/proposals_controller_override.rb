@@ -29,7 +29,7 @@ module Decidim
             on(:ok) do |proposal|
               flash[:notice] = I18n.t("proposals.create.success", scope: "decidim")
 
-              redirect_to "#{Decidim::ResourceLocatorPresenter.new(proposal).path}/compare"
+              redirect_to "#{Decidim::ResourceLocatorPresenter.new(proposal).path}/publish"
             end
 
             on(:invalid) do
